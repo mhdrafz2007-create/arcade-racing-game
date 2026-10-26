@@ -1045,6 +1045,279 @@
       0% { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
       20% { opacity: 1; transform: translate(-50%, -20px) scale(1.2); }
       100% { opacity: 0; transform: translate(-50%, -60px) scale(0.9); }
+    /* ══════════════════════════════════════════════════
+       SETTINGS & CONTROLS MODAL
+    ══════════════════════════════════════════════════ */
+    .settings-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 1.5rem;
+      max-width: 480px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    .settings-header {
+      text-align: center;
+    }
+
+    .settings-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      font-weight: 900;
+      color: var(--neon-cyan);
+      letter-spacing: 0.06em;
+      filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.4));
+    }
+
+    .settings-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .settings-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .settings-section-title {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      color: var(--neon-gold);
+      text-transform: uppercase;
+    }
+
+    .control-scheme-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .scheme-option-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 0.75rem 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      color: inherit;
+    }
+
+    .scheme-option-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .scheme-option-card.active {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.3);
+    }
+
+    .scheme-icon {
+      font-size: 1.6rem;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .scheme-info {
+      flex: 1;
+    }
+
+    .scheme-name {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .scheme-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+      margin-top: 0.15rem;
+    }
+
+    .scheme-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: transparent;
+      transition: all 0.18s ease;
+      flex-shrink: 0;
+    }
+
+    .scheme-option-card.active .scheme-check {
+      background: var(--neon-cyan);
+      border-color: var(--neon-cyan);
+      color: #0b0e14;
+      font-weight: 900;
+      box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .layout-custom-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(245, 179, 36, 0.4);
+      border-radius: 14px;
+      padding: 0.85rem;
+    }
+
+    .settings-toggles-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .settings-toggle-btn {
+      padding: 0.75rem 0.6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.78rem;
+    }
+
+    .settings-toggle-btn strong {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      color: var(--neon-cyan);
+    }
+
+    /* ══════════════════════════════════════════════════
+       LAYOUT CUSTOMIZER OVERLAY & DRAG/RESIZE STYLES
+    ══════════════════════════════════════════════════ */
+    .layout-editor-overlay {
+      position: absolute;
+      top: max(0.6rem, var(--sat));
+      left: 50%;
+      transform: translateX(-50%);
+      width: 94%;
+      max-width: 500px;
+      background: rgba(12, 16, 26, 0.95);
+      border: 1px solid var(--neon-gold);
+      box-shadow: 0 0 25px rgba(245, 179, 36, 0.4);
+      backdrop-filter: blur(12px);
+      border-radius: 18px;
+      padding: 0.85rem 1.1rem;
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      animation: slideDownBar 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .layout-editor-overlay.hidden {
+      display: none;
+    }
+
+    @keyframes slideDownBar {
+      from { transform: translateX(-50%) translateY(-30px); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+
+    .editor-header-text {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      gap: 0.15rem;
+    }
+
+    .editor-title {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: var(--neon-gold);
+      letter-spacing: 0.08em;
+    }
+
+    .editor-hint {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .editor-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .editor-scale-control {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.25rem 0.5rem;
+      border-radius: 10px;
+    }
+
+    .icon-scale-btn {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      min-height: 32px;
+      padding: 0;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .editor-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Buttons in Layout Customization Mode */
+    .touch-btn.customizing-btn {
+      outline: 2px dashed var(--neon-cyan) !important;
+      outline-offset: 4px;
+      cursor: grab !important;
+      touch-action: none !important;
+      user-select: none !important;
+      animation: pulseEditBorder 1.2s infinite alternate;
+    }
+
+    .touch-btn.customizing-btn.selected-target {
+      outline: 3px solid var(--neon-gold) !important;
+      outline-offset: 5px;
+      box-shadow: 0 0 25px rgba(245, 179, 36, 0.8) !important;
+      cursor: grabbing !important;
+    }
+
+    @keyframes pulseEditBorder {
+      from { outline-color: rgba(0, 240, 255, 0.5); }
+      to { outline-color: rgba(0, 240, 255, 1); }
     }
   </style>
 </head>
@@ -1091,8 +1364,9 @@
         <span class="hud-value gold" id="hudCoinsVal">🪙 0</span>
       </div>
 
-      <!-- Utility Icons (Gyroscope, Sound, Haptics, Fullscreen, Pause) -->
+      <!-- Utility Icons (Settings, Gyroscope, Sound, Haptics, Fullscreen, Pause) -->
       <div class="hud-utility-cluster">
+        <button class="btn btn-glass icon-btn" id="hudSettingsBtn" title="Control Settings & Layout">⚙️</button>
         <button class="btn btn-glass icon-btn" id="hudGyroBtn" title="Toggle Tilt Steering (Gyroscope)">📱</button>
         <button class="btn btn-glass icon-btn" id="hudSoundBtn" title="Toggle Sound">🔊</button>
         <button class="btn btn-glass icon-btn" id="hudHapticBtn" title="Toggle Vibration">📳</button>
@@ -1103,6 +1377,26 @@
 
     <!-- Live Toast Alert for Gyroscope & Status Changes -->
     <div class="hud-toast" id="hudToast"></div>
+
+    <!-- Interactive Pedal Layout Editor Overlay Bar -->
+    <div id="layoutEditorOverlay" class="layout-editor-overlay hidden">
+      <div class="editor-header-text">
+        <span class="editor-title">🛠️ PEDAL LAYOUT CUSTOMIZER</span>
+        <span class="editor-hint">Drag GAS & DRIFT buttons to reposition • Use +/- to resize</span>
+      </div>
+      <div class="editor-controls">
+        <div class="editor-scale-control">
+          <span style="font-size:0.75rem; color:var(--text-muted);">SCALE:</span>
+          <button class="btn btn-glass icon-scale-btn" id="btnScaleDown" title="Make Smaller">➖</button>
+          <span id="editorScaleValue" style="font-family:var(--font-display); color:var(--neon-gold); font-size:0.88rem; min-width:44px; text-align:center;">100%</span>
+          <button class="btn btn-glass icon-scale-btn" id="btnScaleUp" title="Make Larger">➕</button>
+        </div>
+        <div class="editor-actions">
+          <button class="btn btn-glass" id="btnEditorReset">↺ Reset</button>
+          <button class="btn btn-gold" id="btnEditorSave">💾 SAVE & DONE</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Bottom Bar: Multi-touch Steering & Pedals -->
     <div class="hud-bottom-bar">
@@ -1176,6 +1470,9 @@
       </button>
       <button class="btn btn-glass" id="btnMobileQR" style="border-color: rgba(0, 240, 255, 0.4); color: var(--neon-cyan);">
         📱 PLAY ON PHONE
+      </button>
+      <button class="btn btn-glass" id="btnMenuSettings">
+        ⚙️ SETTINGS & CONTROLS
       </button>
       <button class="btn btn-glass" id="btnHowTo">
         📖 HOW TO PLAY
@@ -1308,8 +1605,85 @@
     </h2>
     <div class="menu-button-group">
       <button class="btn btn-gold" id="btnResume">RESUME RACE</button>
+      <button class="btn btn-glass" id="btnPauseSettings">⚙️ SETTINGS & CONTROLS</button>
       <button class="btn btn-glass" id="btnPauseRestart">RESTART</button>
       <button class="btn btn-glass" id="btnPauseMenu">MAIN MENU</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SETTINGS & CONTROLS MODAL SCREEN
+  ══════════════════════════════════════════════════ -->
+  <div id="settingsScreen" class="ui-screen hidden">
+    <div class="settings-card">
+      <div class="settings-header">
+        <h2 class="settings-title">⚙️ SETTINGS & CONTROLS</h2>
+        <p class="settings-sub">Configure steering mode, audio, and pedal layout</p>
+      </div>
+
+      <!-- Steering Control Scheme -->
+      <div class="settings-section">
+        <div class="settings-section-title">STEERING CONTROL SCHEME</div>
+        <div class="control-scheme-selector">
+          <div class="scheme-option-card" id="schemeTiltBtn">
+            <div class="scheme-icon">📱</div>
+            <div class="scheme-info">
+              <div class="scheme-name">Tilt Controls (Gyroscope)</div>
+              <div class="scheme-desc">Physically tilt phone left & right to steer smoothly with sensor damping.</div>
+            </div>
+            <div class="scheme-check" id="schemeTiltCheck">✔</div>
+          </div>
+
+          <div class="scheme-option-card" id="schemeButtonsBtn">
+            <div class="scheme-icon">🕹️</div>
+            <div class="scheme-info">
+              <div class="scheme-name">On-Screen Buttons</div>
+              <div class="scheme-desc">Tap or slide ◀ and ▶ touch buttons on screen for classic arcade steering.</div>
+            </div>
+            <div class="scheme-check" id="schemeButtonsCheck">✔</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Button Layout Customization -->
+      <div class="settings-section">
+        <div class="settings-section-title">BUTTON LAYOUT CUSTOMIZATION</div>
+        <div class="layout-custom-box">
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.35; margin-bottom: 0.75rem;">
+            Drag & drop the <strong>GAS</strong> and <strong>DRIFT</strong> pedals anywhere on screen, and resize them to fit your hand size and grip.
+          </p>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button class="btn btn-gold" id="btnOpenLayoutEditor" style="flex:1; min-width:170px; font-size:0.8rem;">
+              📐 CUSTOMIZE BUTTON LAYOUT
+            </button>
+            <button class="btn btn-glass" id="btnResetLayoutSettings" style="min-width:120px; font-size:0.8rem;">
+              ↺ Reset Layout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio & Haptics Toggles -->
+      <div class="settings-section">
+        <div class="settings-section-title">AUDIO & FEEDBACK</div>
+        <div class="settings-toggles-row">
+          <button class="btn btn-glass settings-toggle-btn" id="settingsSoundToggle">
+            <span>Engine & FX</span>
+            <strong id="settingsSoundStatus">🔊 ON</strong>
+          </button>
+          <button class="btn btn-glass settings-toggle-btn" id="settingsHapticToggle">
+            <span>Haptic Vibration</span>
+            <strong id="settingsHapticStatus">📳 ON</strong>
+          </button>
+        </div>
+      </div>
+
+      <!-- Close / Back Button -->
+      <div style="text-align: center; margin-top: 0.2rem;">
+        <button class="btn btn-cyan" id="btnCloseSettings" style="width: 100%; padding: 0.85rem;">
+          ✔ RESUME / CLOSE
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1557,6 +1931,11 @@ function loadSaveData() {
     bestScore: 0,
     carSkin: 'cyan',
     gyroEnabled: false,
+    customLayout: {
+      customized: false,
+      gas: null,
+      drift: null
+    },
     upgrades: {
       speed: 1,
       accel: 1,
@@ -1574,6 +1953,7 @@ function loadSaveData() {
       bestScore: typeof parsed.bestScore === 'number' ? parsed.bestScore : defaults.bestScore,
       carSkin: parsed.carSkin || defaults.carSkin,
       gyroEnabled: typeof parsed.gyroEnabled === 'boolean' ? parsed.gyroEnabled : false,
+      customLayout: parsed.customLayout && typeof parsed.customLayout === 'object' ? parsed.customLayout : defaults.customLayout,
       upgrades: {
         speed: parsed.upgrades?.speed || 1,
         accel: parsed.upgrades?.accel || 1,
@@ -1757,6 +2137,7 @@ function setupInputListeners() {
     let activeTouchId = null;
 
     const start = (e) => {
+      if (isLayoutEditorMode) return;
       e.preventDefault();
       sound.init();
       sound.resume();
@@ -1765,6 +2146,7 @@ function setupInputListeners() {
     };
 
     const stop = (e) => {
+      if (isLayoutEditorMode) return;
       e.preventDefault();
       el.classList.remove('active-touch');
       onUp();
@@ -2058,10 +2440,331 @@ class GyroscopeController {
         indicator.classList.remove('visible');
       }
     }
+
+    if (typeof updateSettingsUI === 'function') {
+      updateSettingsUI();
+    }
   }
 }
 
 const gyro = new GyroscopeController();
+
+/* ==================================================
+   SETTINGS & CONTROLS MANAGER
+================================================== */
+let settingsSource = 'menu'; // 'menu', 'pause', 'hud'
+
+function openSettings(source = 'menu') {
+  sound.playClick();
+  settingsSource = source;
+
+  // If in active race and not paused, pause game
+  if (gameState.active && !gameState.paused) {
+    togglePause();
+  }
+
+  updateSettingsUI();
+  showScreen('settingsScreen');
+}
+
+function updateSettingsUI() {
+  const isTilt = gyro.enabled;
+  const tiltCard = document.getElementById('schemeTiltBtn');
+  const buttonsCard = document.getElementById('schemeButtonsBtn');
+
+  if (tiltCard && buttonsCard) {
+    tiltCard.classList.toggle('active', isTilt);
+    buttonsCard.classList.toggle('active', !isTilt);
+  }
+
+  const soundStatus = document.getElementById('settingsSoundStatus');
+  if (soundStatus) soundStatus.textContent = sound.muted ? '🔇 OFF' : '🔊 ON';
+
+  const hapticStatus = document.getElementById('settingsHapticStatus');
+  if (hapticStatus) hapticStatus.textContent = sound.hapticsEnabled ? '📳 ON' : '📴 OFF';
+}
+
+function closeSettings() {
+  sound.playClick();
+  if (settingsSource === 'pause' || (gameState.active && gameState.paused)) {
+    showScreen('pauseScreen');
+  } else {
+    openMainMenu();
+  }
+}
+
+/* ==================================================
+   INTERACTIVE BUTTON LAYOUT CUSTOMIZER (DRAG, DROP & RESIZE)
+================================================== */
+let isLayoutEditorMode = false;
+let selectedButtonId = 'touchGasBtn'; // 'touchGasBtn' or 'touchBrakeBtn'
+let activeDragTarget = null;
+let dragPointerId = null;
+let dragStartX = 0;
+let dragStartY = 0;
+let initialElemLeft = 0;
+let initialElemTop = 0;
+
+function applyCustomLayout() {
+  const cfg = saveState.customLayout;
+  const gasBtn = document.getElementById('touchGasBtn');
+  const brakeBtn = document.getElementById('touchBrakeBtn');
+  if (!gasBtn || !brakeBtn) return;
+
+  if (!cfg || !cfg.customized) {
+    // Revert to default flex flow inside .touch-action-cluster
+    gasBtn.style.position = '';
+    gasBtn.style.left = '';
+    gasBtn.style.top = '';
+    gasBtn.style.width = '';
+    gasBtn.style.height = '';
+    gasBtn.style.zIndex = '';
+
+    brakeBtn.style.position = '';
+    brakeBtn.style.left = '';
+    brakeBtn.style.top = '';
+    brakeBtn.style.width = '';
+    brakeBtn.style.height = '';
+    brakeBtn.style.zIndex = '';
+    return;
+  }
+
+  if (cfg.gas) {
+    gasBtn.style.position = 'fixed';
+    gasBtn.style.left = `${cfg.gas.left}px`;
+    gasBtn.style.top = `${cfg.gas.top}px`;
+    gasBtn.style.width = `${cfg.gas.width}px`;
+    gasBtn.style.height = `${cfg.gas.height}px`;
+    gasBtn.style.zIndex = '45';
+  }
+
+  if (cfg.drift) {
+    brakeBtn.style.position = 'fixed';
+    brakeBtn.style.left = `${cfg.drift.left}px`;
+    brakeBtn.style.top = `${cfg.drift.top}px`;
+    brakeBtn.style.width = `${cfg.drift.width}px`;
+    brakeBtn.style.height = `${cfg.drift.height}px`;
+    brakeBtn.style.zIndex = '45';
+  }
+}
+
+function startLayoutCustomizer() {
+  sound.playClick();
+  hideAllScreens();
+  document.getElementById('hudLayer').classList.remove('hidden');
+
+  const overlay = document.getElementById('layoutEditorOverlay');
+  if (overlay) overlay.classList.remove('hidden');
+
+  isLayoutEditorMode = true;
+
+  const gasBtn = document.getElementById('touchGasBtn');
+  const brakeBtn = document.getElementById('touchBrakeBtn');
+
+  // Convert to fixed coordinates so they can be dragged freely across the screen
+  const gasRect = gasBtn.getBoundingClientRect();
+  const brakeRect = brakeBtn.getBoundingClientRect();
+
+  if (!saveState.customLayout || !saveState.customLayout.customized) {
+    gasBtn.style.position = 'fixed';
+    gasBtn.style.left = `${Math.round(gasRect.left)}px`;
+    gasBtn.style.top = `${Math.round(gasRect.top)}px`;
+    gasBtn.style.width = `${Math.round(gasRect.width)}px`;
+    gasBtn.style.height = `${Math.round(gasRect.height)}px`;
+    gasBtn.style.zIndex = '75';
+
+    brakeBtn.style.position = 'fixed';
+    brakeBtn.style.left = `${Math.round(brakeRect.left)}px`;
+    brakeBtn.style.top = `${Math.round(brakeRect.top)}px`;
+    brakeBtn.style.width = `${Math.round(brakeRect.width)}px`;
+    brakeBtn.style.height = `${Math.round(brakeRect.height)}px`;
+    brakeBtn.style.zIndex = '75';
+  } else {
+    gasBtn.style.zIndex = '75';
+    brakeBtn.style.zIndex = '75';
+  }
+
+  gasBtn.classList.add('customizing-btn');
+  brakeBtn.classList.add('customizing-btn');
+
+  selectButtonForCustomizing('touchGasBtn');
+  showHUDToast('🛠️ DRAG PEDALS TO MOVE • USE +/- TO RESIZE');
+}
+
+function selectButtonForCustomizing(btnId) {
+  selectedButtonId = btnId;
+  const gasBtn = document.getElementById('touchGasBtn');
+  const brakeBtn = document.getElementById('touchBrakeBtn');
+
+  if (gasBtn && brakeBtn) {
+    gasBtn.classList.toggle('selected-target', btnId === 'touchGasBtn');
+    brakeBtn.classList.toggle('selected-target', btnId === 'touchBrakeBtn');
+
+    const targetEl = document.getElementById(btnId);
+    if (targetEl) {
+      const curW = targetEl.offsetWidth;
+      const baseW = btnId === 'touchGasBtn' ? 72 : 64;
+      const pct = Math.round((curW / baseW) * 100);
+      const scaleLabel = document.getElementById('editorScaleValue');
+      if (scaleLabel) scaleLabel.textContent = `${pct}%`;
+    }
+  }
+}
+
+function resizeSelectedButton(delta) {
+  const target = document.getElementById(selectedButtonId);
+  if (!target) return;
+
+  const currentW = target.offsetWidth;
+  const currentH = target.offsetHeight;
+  const minSize = 48;
+  const maxSize = 125;
+
+  const newW = Math.max(minSize, Math.min(maxSize, currentW + delta));
+  const newH = Math.max(minSize, Math.min(maxSize, currentH + delta));
+
+  target.style.width = `${newW}px`;
+  target.style.height = `${newH}px`;
+
+  // Clamp position so enlarged button stays on screen
+  const curLeft = parseFloat(target.style.left) || target.getBoundingClientRect().left;
+  const curTop = parseFloat(target.style.top) || target.getBoundingClientRect().top;
+  const clampedL = Math.max(8, Math.min(window.innerWidth - newW - 8, curLeft));
+  const clampedT = Math.max(70, Math.min(window.innerHeight - newH - 8, curTop));
+  target.style.left = `${clampedL}px`;
+  target.style.top = `${clampedT}px`;
+
+  const baseW = selectedButtonId === 'touchGasBtn' ? 72 : 64;
+  const pct = Math.round((newW / baseW) * 100);
+  const scaleLabel = document.getElementById('editorScaleValue');
+  if (scaleLabel) scaleLabel.textContent = `${pct}%`;
+
+  sound.playClick();
+}
+
+function saveCustomLayout() {
+  sound.playClick();
+  const gasBtn = document.getElementById('touchGasBtn');
+  const brakeBtn = document.getElementById('touchBrakeBtn');
+
+  const gasRect = gasBtn.getBoundingClientRect();
+  const brakeRect = brakeBtn.getBoundingClientRect();
+
+  saveState.customLayout = {
+    customized: true,
+    gas: {
+      left: Math.round(gasRect.left),
+      top: Math.round(gasRect.top),
+      width: Math.round(gasRect.width),
+      height: Math.round(gasRect.height)
+    },
+    drift: {
+      left: Math.round(brakeRect.left),
+      top: Math.round(brakeRect.top),
+      width: Math.round(brakeRect.width),
+      height: Math.round(brakeRect.height)
+    }
+  };
+  saveGame();
+
+  exitLayoutEditorMode();
+  showHUDToast('✅ PEDAL LAYOUT SAVED!');
+  openSettings(settingsSource);
+}
+
+function resetCustomLayout() {
+  sound.playClick();
+  saveState.customLayout = { customized: false };
+  saveGame();
+
+  applyCustomLayout();
+
+  if (isLayoutEditorMode) {
+    const gasBtn = document.getElementById('touchGasBtn');
+    const brakeBtn = document.getElementById('touchBrakeBtn');
+    if (gasBtn) gasBtn.classList.remove('customizing-btn', 'selected-target');
+    if (brakeBtn) brakeBtn.classList.remove('customizing-btn', 'selected-target');
+    exitLayoutEditorMode();
+    openSettings(settingsSource);
+  }
+
+  showHUDToast('↺ PEDALS RESET TO DEFAULT');
+}
+
+function exitLayoutEditorMode() {
+  isLayoutEditorMode = false;
+  activeDragTarget = null;
+  dragPointerId = null;
+
+  const overlay = document.getElementById('layoutEditorOverlay');
+  if (overlay) overlay.classList.add('hidden');
+
+  const gasBtn = document.getElementById('touchGasBtn');
+  const brakeBtn = document.getElementById('touchBrakeBtn');
+  if (gasBtn) {
+    gasBtn.classList.remove('customizing-btn', 'selected-target');
+    gasBtn.style.zIndex = '45';
+  }
+  if (brakeBtn) {
+    brakeBtn.classList.remove('customizing-btn', 'selected-target');
+    brakeBtn.style.zIndex = '45';
+  }
+
+  applyCustomLayout();
+}
+
+function setupDraggableButtons() {
+  const gasBtn = document.getElementById('touchGasBtn');
+  const brakeBtn = document.getElementById('touchBrakeBtn');
+
+  [gasBtn, brakeBtn].forEach(el => {
+    if (!el) return;
+
+    el.addEventListener('pointerdown', e => {
+      if (!isLayoutEditorMode) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      activeDragTarget = el;
+      dragPointerId = e.pointerId;
+      selectButtonForCustomizing(el.id);
+
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+
+      const rect = el.getBoundingClientRect();
+      initialElemLeft = rect.left;
+      initialElemTop = rect.top;
+
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+
+    el.addEventListener('pointermove', e => {
+      if (!isLayoutEditorMode || activeDragTarget !== el || e.pointerId !== dragPointerId) return;
+      e.preventDefault();
+
+      const deltaX = e.clientX - dragStartX;
+      const deltaY = e.clientY - dragStartY;
+
+      const newLeft = Math.max(8, Math.min(window.innerWidth - el.offsetWidth - 8, initialElemLeft + deltaX));
+      const newTop = Math.max(70, Math.min(window.innerHeight - el.offsetHeight - 8, initialElemTop + deltaY));
+
+      el.style.left = `${newLeft}px`;
+      el.style.top = `${newTop}px`;
+    });
+
+    const stopDrag = (e) => {
+      if (!isLayoutEditorMode || activeDragTarget !== el) return;
+      try { el.releasePointerCapture(e.pointerId); } catch (err) {}
+      activeDragTarget = null;
+      dragPointerId = null;
+      selectButtonForCustomizing(el.id);
+    };
+
+    el.addEventListener('pointerup', stopDrag);
+    el.addEventListener('pointercancel', stopDrag);
+  });
+}
 
 /* ==================================================
    7. SPAWNERS & PROCEDURAL ROAD CONTENT
@@ -2269,6 +2972,7 @@ function startNewRace() {
   document.getElementById('hudLayer').classList.remove('hidden');
   updateShieldsHUD();
   gyro.updateUIState();
+  applyCustomLayout();
 
   gameState.lastTime = performance.now();
   if (gameState.rafId) cancelAnimationFrame(gameState.rafId);
@@ -2583,28 +3287,35 @@ function drawTerrain(dayTime) {
 
 function drawRoad(dayTime) {
   const isNight = dayTime > 0.45 && dayTime < 0.88;
-  ctx.fillStyle = isNight ? '#10131d' : '#1c202d';
+
+  // 1. Soft, low-contrast dirt/gravel outer shoulders (smooth transition to terrain, no strobing)
+  const dirtColor = isNight ? '#0e0c0a' : '#1f1b16';
+  ctx.fillStyle = dirtColor;
+  ctx.fillRect(ROAD_LEFT - 16, 0, 4, CANVAS_HEIGHT);
+  ctx.fillRect(ROAD_RIGHT + 12, 0, 4, CANVAS_HEIGHT);
+
+  // 2. Muted, solid dark asphalt shoulder (completely eliminates red/white flashing stripes)
+  const shoulderColor = isNight ? '#0a0d14' : '#151821';
+  ctx.fillStyle = shoulderColor;
+  ctx.fillRect(ROAD_LEFT - 12, 0, 12, CANVAS_HEIGHT);
+  ctx.fillRect(ROAD_RIGHT, 0, 12, CANVAS_HEIGHT);
+
+  // 3. Main asphalt road surface
+  ctx.fillStyle = isNight ? '#0f121a' : '#1c202d';
   ctx.fillRect(ROAD_LEFT, 0, ROAD_WIDTH, CANVAS_HEIGHT);
 
-  const curbHeight = 24;
-  const offset = gameState.roadOffset % (curbHeight * 2);
-  for (let y = -curbHeight * 2; y < CANVAS_HEIGHT + curbHeight * 2; y += curbHeight) {
-    const isRed = Math.floor((y + offset) / curbHeight) % 2 === 0;
-    ctx.fillStyle = isRed ? '#e63946' : '#f1faee';
-    ctx.fillRect(ROAD_LEFT - 7, y + offset, 7, curbHeight);
-    ctx.fillRect(ROAD_RIGHT, y + offset, 7, curbHeight);
-  }
+  // 4. Subtle, low-contrast solid edge lines (smooth white-slate, zero strobing, no glare)
+  ctx.fillStyle = isNight ? 'rgba(255, 255, 255, 0.16)' : 'rgba(255, 255, 255, 0.22)';
+  ctx.fillRect(ROAD_LEFT, 0, 2, CANVAS_HEIGHT);
+  ctx.fillRect(ROAD_RIGHT - 2, 0, 2, CANVAS_HEIGHT);
 
-  ctx.fillStyle = '#f5b324';
-  ctx.fillRect(ROAD_LEFT + 2, 0, 3, CANVAS_HEIGHT);
-  ctx.fillRect(ROAD_RIGHT - 5, 0, 3, CANVAS_HEIGHT);
-
+  // 5. Center lane dashed markings (softened contrast for comfortable high-speed driving)
   const dashH = 40;
   const gapH = 35;
   const totalDash = dashH + gapH;
   const dashOffset = gameState.roadOffset % totalDash;
 
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+  ctx.fillStyle = isNight ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.36)';
   for (let l = 1; l < NUM_LANES; l++) {
     const laneX = ROAD_LEFT + l * LANE_WIDTH;
     for (let y = -totalDash; y < CANVAS_HEIGHT + totalDash; y += totalDash) {
@@ -2918,7 +3629,7 @@ function drawRoundedRect(context, x, y, w, h, r) {
    12. SCREENS & MENU INTERACTIONS
 ================================================== */
 function hideAllScreens() {
-  const screens = ['menuScreen', 'shopScreen', 'howToScreen', 'phoneQRScreen', 'pauseScreen', 'gameOverScreen'];
+  const screens = ['menuScreen', 'shopScreen', 'howToScreen', 'phoneQRScreen', 'pauseScreen', 'gameOverScreen', 'settingsScreen'];
   screens.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.classList.add('hidden');
@@ -3172,6 +3883,55 @@ document.getElementById('btnGoMenu').addEventListener('click', () => {
   openMainMenu();
 });
 
+document.getElementById('hudSettingsBtn').addEventListener('click', () => {
+  openSettings(gameState.active ? 'hud' : 'menu');
+});
+
+document.getElementById('btnMenuSettings').addEventListener('click', () => {
+  openSettings('menu');
+});
+
+document.getElementById('btnPauseSettings').addEventListener('click', () => {
+  openSettings('pause');
+});
+
+document.getElementById('btnCloseSettings').addEventListener('click', closeSettings);
+
+document.getElementById('schemeTiltBtn').addEventListener('click', async () => {
+  sound.playClick();
+  if (!gyro.enabled) {
+    await gyro.requestPermissionAndToggle();
+    updateSettingsUI();
+  }
+});
+
+document.getElementById('schemeButtonsBtn').addEventListener('click', () => {
+  sound.playClick();
+  if (gyro.enabled) {
+    gyro.disable();
+    updateSettingsUI();
+    showHUDToast('🕹️ ON-SCREEN BUTTONS SELECTED');
+  }
+});
+
+document.getElementById('btnOpenLayoutEditor').addEventListener('click', startLayoutCustomizer);
+document.getElementById('btnResetLayoutSettings').addEventListener('click', resetCustomLayout);
+
+document.getElementById('settingsSoundToggle').addEventListener('click', () => {
+  sound.toggleMute();
+  updateSettingsUI();
+});
+
+document.getElementById('settingsHapticToggle').addEventListener('click', () => {
+  sound.toggleHaptics();
+  updateSettingsUI();
+});
+
+document.getElementById('btnScaleDown').addEventListener('click', () => resizeSelectedButton(-6));
+document.getElementById('btnScaleUp').addEventListener('click', () => resizeSelectedButton(6));
+document.getElementById('btnEditorReset').addEventListener('click', resetCustomLayout);
+document.getElementById('btnEditorSave').addEventListener('click', saveCustomLayout);
+
 document.getElementById('hudGyroBtn').addEventListener('click', async () => {
   sound.playClick();
   await gyro.requestPermissionAndToggle();
@@ -3205,10 +3965,14 @@ document.getElementById('btnFreeCoins').addEventListener('click', () => {
 window.addEventListener('load', () => {
   resizeCanvas();
   gyro.init(saveState.gyroEnabled);
+  applyCustomLayout();
+  setupDraggableButtons();
   openMainMenu();
 });
 resizeCanvas();
 gyro.init(saveState.gyroEnabled);
+applyCustomLayout();
+setupDraggableButtons();
 openMainMenu();
 </script>
 </body>
