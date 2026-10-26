@@ -265,6 +265,13 @@
       touch-action: manipulation;
     }
 
+    .icon-btn.active {
+      background: rgba(0, 240, 255, 0.28);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.6);
+      color: #fff;
+    }
+
     /* ══════════════════════════════════════════════════
        MAIN MENU
     ══════════════════════════════════════════════════ */
@@ -379,9 +386,20 @@
       display: flex;
       gap: 0.35rem;
       flex-shrink: 0;
-      min-width: 155px;
+      min-width: 245px;
       justify-content: flex-end;
       pointer-events: auto;
+    }
+
+    @media (max-width: 520px) {
+      .hud-top-bar {
+        gap: 0.25rem;
+      }
+      .hud-pill.score-pill { width: 92px; min-width: 92px; padding: 0.35rem 0.5rem; }
+      .hud-pill.shields-pill { width: 72px; min-width: 72px; padding: 0.35rem 0.4rem; }
+      .hud-pill.coins-pill { width: 80px; min-width: 80px; padding: 0.35rem 0.5rem; }
+      .hud-utility-cluster { min-width: 185px; gap: 0.2rem; }
+      .icon-btn { width: 35px; height: 35px; min-width: 35px; min-height: 35px; font-size: 1rem; }
     }
 
     .hud-label {
@@ -592,6 +610,122 @@
     @keyframes pulseNitro {
       from { transform: scale(0.95); opacity: 0.7; }
       to { transform: scale(1.1); opacity: 1; }
+    }
+
+    /* ══════════════════════════════════════════════════
+       GYROSCOPE TILT HORIZON / INCLINOMETER
+    ══════════════════════════════════════════════════ */
+    .gyro-indicator {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      pointer-events: none;
+      padding: 0.35rem 0.85rem;
+      background: rgba(12, 16, 26, 0.88);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(8px);
+      border-radius: 999px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      margin-bottom: 0.4rem;
+      transition: opacity 0.25s ease;
+    }
+
+    .gyro-indicator.visible {
+      display: flex;
+    }
+
+    .gyro-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 12px;
+      font-family: var(--font-display);
+      font-size: 0.52rem;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .gyro-angle-val {
+      color: var(--neon-cyan);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
+
+    .gyro-track {
+      position: relative;
+      width: 100px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 99px;
+      overflow: visible;
+    }
+
+    .gyro-center-notch {
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 9px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 1px;
+    }
+
+    .gyro-pip {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--neon-cyan);
+      box-shadow: 0 0 10px var(--neon-cyan);
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .gyro-pip.hard-turn {
+      background: var(--neon-pink);
+      box-shadow: 0 0 14px var(--neon-pink);
+    }
+
+    .touch-steer-cluster.gyro-dimmed .touch-btn {
+      opacity: 0.32;
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
+
+    /* Floating Toast Notification */
+    .hud-toast {
+      position: absolute;
+      top: calc(max(0.8rem, var(--sat)) + 52px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background: rgba(12, 16, 26, 0.94);
+      border: 1px solid var(--neon-cyan);
+      box-shadow: 0 0 22px rgba(0, 240, 255, 0.4);
+      backdrop-filter: blur(10px);
+      border-radius: 999px;
+      padding: 0.45rem 1.3rem;
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #fff;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      z-index: 60;
+      white-space: nowrap;
+    }
+
+    .hud-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     /* ══════════════════════════════════════════════════
@@ -957,14 +1091,18 @@
         <span class="hud-value gold" id="hudCoinsVal">🪙 0</span>
       </div>
 
-      <!-- Utility Icons (Sound, Haptics, Fullscreen, Pause) -->
+      <!-- Utility Icons (Gyroscope, Sound, Haptics, Fullscreen, Pause) -->
       <div class="hud-utility-cluster">
+        <button class="btn btn-glass icon-btn" id="hudGyroBtn" title="Toggle Tilt Steering (Gyroscope)">📱</button>
         <button class="btn btn-glass icon-btn" id="hudSoundBtn" title="Toggle Sound">🔊</button>
         <button class="btn btn-glass icon-btn" id="hudHapticBtn" title="Toggle Vibration">📳</button>
         <button class="btn btn-glass icon-btn" id="hudFullscreenBtn" title="Toggle Fullscreen">⛶</button>
         <button class="btn btn-glass icon-btn" id="hudPauseBtn" title="Pause Game">⏸</button>
       </div>
     </div>
+
+    <!-- Live Toast Alert for Gyroscope & Status Changes -->
+    <div class="hud-toast" id="hudToast"></div>
 
     <!-- Bottom Bar: Multi-touch Steering & Pedals -->
     <div class="hud-bottom-bar">
@@ -974,23 +1112,36 @@
         <button class="touch-btn" id="touchRightBtn" aria-label="Steer Right">▶</button>
       </div>
 
-      <!-- Center: Speedometer Gauge -->
-      <div class="speedo-wrap">
-        <svg viewBox="0 0 100 100">
-          <defs>
-            <linearGradient id="speedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00f0ff" />
-              <stop offset="60%" stop-color="#f5b324" />
-              <stop offset="100%" stop-color="#ff2a6d" />
-            </linearGradient>
-          </defs>
-          <circle class="speedo-bg-track" cx="50" cy="50" r="38"></circle>
-          <circle class="speedo-fill-track" id="speedoCircle" cx="50" cy="50" r="38"></circle>
-        </svg>
-        <div class="speedo-text-center">
-          <span class="speedo-number" id="speedoNumber">0</span>
-          <span class="speedo-unit">KM/H</span>
-          <span class="nitro-indicator" id="nitroBadge">NITRO!</span>
+      <!-- Center: Gyro Inclinometer & Speedometer Gauge -->
+      <div class="hud-center-cluster" style="display:flex; flex-direction:column; align-items:center;">
+        <div class="gyro-indicator" id="gyroHudIndicator">
+          <div class="gyro-label-row">
+            <span>TILT</span>
+            <span class="gyro-angle-val" id="gyroAngleVal">0°</span>
+          </div>
+          <div class="gyro-track">
+            <div class="gyro-center-notch"></div>
+            <div class="gyro-pip" id="gyroPip"></div>
+          </div>
+        </div>
+
+        <div class="speedo-wrap">
+          <svg viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="speedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f0ff" />
+                <stop offset="60%" stop-color="#f5b324" />
+                <stop offset="100%" stop-color="#ff2a6d" />
+              </linearGradient>
+            </defs>
+            <circle class="speedo-bg-track" cx="50" cy="50" r="38"></circle>
+            <circle class="speedo-fill-track" id="speedoCircle" cx="50" cy="50" r="38"></circle>
+          </svg>
+          <div class="speedo-text-center">
+            <span class="speedo-number" id="speedoNumber">0</span>
+            <span class="speedo-unit">KM/H</span>
+            <span class="nitro-indicator" id="nitroBadge">NITRO!</span>
+          </div>
         </div>
       </div>
 
@@ -1019,6 +1170,9 @@
       </button>
       <button class="btn btn-cyan" id="btnShop">
         🛒 GARAGE / UPGRADES
+      </button>
+      <button class="btn btn-glass" id="menuGyroToggle" style="border-color: rgba(0, 240, 255, 0.4);">
+        📱 STEERING: TOUCH BUTTONS
       </button>
       <button class="btn btn-glass" id="btnMobileQR" style="border-color: rgba(0, 240, 255, 0.4); color: var(--neon-cyan);">
         📱 PLAY ON PHONE
@@ -1122,8 +1276,9 @@
       <div style="display:flex; flex-direction:column; gap:0.9rem; font-size:0.85rem; color:var(--text-muted);">
         <div>
           <strong style="color:var(--neon-gold);">📱 ON MOBILE / ANDROID:</strong>
-          <p>• Left thumb: Tap ◀ and ▶ buttons, or slide your finger on the left side of the screen.</p>
-          <p>• Right thumb: Hold <strong>GAS ▲</strong> to accelerate, tap <strong>DRIFT ▼</strong> for tight corners.</p>
+          <p>• <strong>Tilt Steering (Gyroscope):</strong> Tilt your phone left & right to steer naturally! Tap the 📱 icon or menu button to toggle.</p>
+          <p>• <strong>Touch Buttons:</strong> Tap ◀ and ▶ or slide your finger on the left screen half to steer manually.</p>
+          <p>• <strong>Right thumb:</strong> Hold <strong>GAS ▲</strong> to accelerate, tap <strong>DRIFT ▼</strong> for tight corners.</p>
         </div>
         <div>
           <strong style="color:var(--neon-cyan);">💻 ON DESKTOP / PC:</strong>
@@ -1401,6 +1556,7 @@ function loadSaveData() {
     coins: 200,
     bestScore: 0,
     carSkin: 'cyan',
+    gyroEnabled: false,
     upgrades: {
       speed: 1,
       accel: 1,
@@ -1417,6 +1573,7 @@ function loadSaveData() {
       coins: typeof parsed.coins === 'number' ? parsed.coins : defaults.coins,
       bestScore: typeof parsed.bestScore === 'number' ? parsed.bestScore : defaults.bestScore,
       carSkin: parsed.carSkin || defaults.carSkin,
+      gyroEnabled: typeof parsed.gyroEnabled === 'boolean' ? parsed.gyroEnabled : false,
       upgrades: {
         speed: parsed.upgrades?.speed || 1,
         accel: parsed.upgrades?.accel || 1,
@@ -1707,6 +1864,206 @@ function setupInputListeners() {
 setupInputListeners();
 
 /* ==================================================
+   HUD TOAST NOTIFICATIONS
+================================================== */
+let toastTimer = null;
+function showHUDToast(msg) {
+  const toast = document.getElementById('hudToast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2200);
+}
+
+/* ==================================================
+   GYROSCOPE TILT STEERING CONTROLLER (DEVICE ORIENTATION API)
+================================================== */
+class GyroscopeController {
+  constructor() {
+    this.supported = typeof window !== 'undefined' && 'DeviceOrientationEvent' in window;
+    this.enabled = false;
+    this.active = false;
+    this.rawGamma = 0;       // Raw degrees from DeviceOrientationEvent (-90 to +90)
+    this.smoothedGamma = 0;  // Damped and filtered angle
+    this.steerFactor = 0;    // Clamped and curved steering factor: -1.0 (full left) to +1.0 (full right)
+    this.deadzone = 2.2;     // Ignore tremors under 2.2 degrees
+    this.maxTilt = 24.0;     // Full lock steer at 24 degrees
+    this.dampingRate = 0.22; // Low-pass filter damping rate for responsive yet jitter-free steering
+    this.permissionState = 'unknown';
+    this.listening = false;
+    this.onOrientation = this.handleOrientation.bind(this);
+  }
+
+  init(initialEnabled = false) {
+    if (initialEnabled) {
+      this.enable(false);
+    } else {
+      this.updateUIState();
+    }
+  }
+
+  async requestPermissionAndToggle() {
+    if (!this.supported) {
+      showHUDToast('⚠️ Tilt sensor not supported on this device');
+      return false;
+    }
+
+    // iOS 13+ requires user-gesture permission request
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      try {
+        const response = await DeviceOrientationEvent.requestPermission();
+        this.permissionState = response;
+        if (response !== 'granted') {
+          showHUDToast('❌ Motion permission denied by browser');
+          this.disable();
+          return false;
+        }
+      } catch (err) {
+        showHUDToast('⚠️ Motion sensor permission error');
+        this.disable();
+        return false;
+      }
+    }
+
+    return this.toggle();
+  }
+
+  toggle() {
+    if (this.enabled) {
+      this.disable();
+      showHUDToast('📱 TILT STEERING: OFF (TOUCH BUTTONS)');
+      return false;
+    } else {
+      this.enable(true);
+      showHUDToast('📱 TILT STEERING: ON (TILT PHONE TO STEER)');
+      return true;
+    }
+  }
+
+  enable(fromUser = true) {
+    this.enabled = true;
+    this.active = true;
+    saveState.gyroEnabled = true;
+    saveGame();
+
+    if (!this.listening && typeof window !== 'undefined') {
+      window.addEventListener('deviceorientation', this.onOrientation, { passive: true });
+      this.listening = true;
+    }
+
+    this.updateUIState();
+  }
+
+  disable() {
+    this.enabled = false;
+    this.active = false;
+    this.steerFactor = 0;
+    this.smoothedGamma = 0;
+    this.rawGamma = 0;
+    saveState.gyroEnabled = false;
+    saveGame();
+
+    if (this.listening && typeof window !== 'undefined') {
+      window.removeEventListener('deviceorientation', this.onOrientation);
+      this.listening = false;
+    }
+
+    this.updateUIState();
+  }
+
+  handleOrientation(e) {
+    let gamma = e.gamma;
+    if (gamma === null || typeof gamma === 'undefined') return;
+
+    // Support screen rotation (portrait vs landscape)
+    const angle = window.screen?.orientation?.angle ?? window.orientation ?? 0;
+    if (angle === 90) {
+      gamma = e.beta;
+    } else if (angle === -90 || angle === 270) {
+      gamma = -e.beta;
+    } else if (angle === 180) {
+      gamma = -e.gamma;
+    }
+
+    this.rawGamma = Math.max(-60, Math.min(60, gamma));
+  }
+
+  update(dtFactor) {
+    if (!this.enabled) {
+      this.steerFactor = 0;
+      this.smoothedGamma = 0;
+      return;
+    }
+
+    // Exponential smoothing (damping) to prevent hand tremor jitter
+    const alpha = Math.min(1, this.dampingRate * dtFactor);
+    this.smoothedGamma += (this.rawGamma - this.smoothedGamma) * alpha;
+
+    const angle = this.smoothedGamma;
+    const absAngle = Math.abs(angle);
+
+    if (absAngle <= this.deadzone) {
+      this.steerFactor = 0;
+    } else {
+      const effectiveAngle = absAngle - this.deadzone;
+      const effectiveRange = this.maxTilt - this.deadzone;
+      const normalized = Math.min(1, effectiveAngle / effectiveRange);
+      // Non-linear power curve for pinpoint centering and quick cornering
+      const curved = Math.pow(normalized, 1.25);
+      this.steerFactor = Math.sign(angle) * curved;
+    }
+  }
+
+  updateUIState() {
+    const hudBtn = document.getElementById('hudGyroBtn');
+    if (hudBtn) {
+      if (this.enabled) {
+        hudBtn.classList.add('active');
+        hudBtn.title = "Tilt Steering: ACTIVE (Click to switch to Buttons)";
+      } else {
+        hudBtn.classList.remove('active');
+        hudBtn.title = "Tilt Steering: OFF (Click to enable Gyroscope)";
+      }
+    }
+
+    const menuToggle = document.getElementById('menuGyroToggle');
+    if (menuToggle) {
+      menuToggle.innerHTML = this.enabled ? '📱 STEERING: TILT (GYROSCOPE) ⚡' : '📱 STEERING: TOUCH BUTTONS';
+      if (this.enabled) {
+        menuToggle.classList.add('btn-cyan');
+        menuToggle.classList.remove('btn-glass');
+      } else {
+        menuToggle.classList.add('btn-glass');
+        menuToggle.classList.remove('btn-cyan');
+      }
+    }
+
+    const steerCluster = document.getElementById('touchSteerCluster');
+    if (steerCluster) {
+      if (this.enabled) {
+        steerCluster.classList.add('gyro-dimmed');
+      } else {
+        steerCluster.classList.remove('gyro-dimmed');
+      }
+    }
+
+    const indicator = document.getElementById('gyroHudIndicator');
+    if (indicator) {
+      if (this.enabled && gameState.active) {
+        indicator.classList.add('visible');
+      } else {
+        indicator.classList.remove('visible');
+      }
+    }
+  }
+}
+
+const gyro = new GyroscopeController();
+
+/* ==================================================
    7. SPAWNERS & PROCEDURAL ROAD CONTENT
 ================================================== */
 const TRAFFIC_COLORS = ['#ff4d4d', '#3a86ff', '#8338ec', '#ffbe0b', '#fb5607', '#2ec4b6'];
@@ -1911,6 +2268,7 @@ function startNewRace() {
   hideAllScreens();
   document.getElementById('hudLayer').classList.remove('hidden');
   updateShieldsHUD();
+  gyro.updateUIState();
 
   gameState.lastTime = performance.now();
   if (gameState.rafId) cancelAnimationFrame(gameState.rafId);
@@ -1968,10 +2326,21 @@ function updatePhysics(dt) {
 
   // 2. Lateral Steering & Momentum Drift
   const isDrifting = input.drift || (Math.abs(p.vx) > 3.5 && input.down);
-  const targetVx = (input.left ? -1 : 0) + (input.right ? 1 : 0);
+  gyro.update(dtFactor);
 
-  if (targetVx !== 0) {
-    p.vx += targetVx * p.turnSpeed * (isDrifting ? 0.35 : 0.22) * dtFactor;
+  const buttonInput = (input.left ? -1 : 0) + (input.right ? 1 : 0);
+  const gyroInput = gyro.enabled ? gyro.steerFactor : 0;
+
+  // Seamless dual-control blending: if player taps/holds buttons, buttons steer; otherwise gyro steers smoothly
+  let targetVx = 0;
+  if (buttonInput !== 0) {
+    targetVx = buttonInput;
+  } else if (gyro.enabled && Math.abs(gyroInput) > 0.01) {
+    targetVx = gyroInput;
+  }
+
+  if (Math.abs(targetVx) > 0.01) {
+    p.vx += targetVx * p.turnSpeed * (isDrifting ? 0.38 : 0.24) * dtFactor;
     p.vx = Math.max(-p.turnSpeed, Math.min(p.turnSpeed, p.vx));
   } else {
     p.vx *= Math.pow(isDrifting ? 0.94 : 0.82, dtFactor);
@@ -1980,7 +2349,9 @@ function updatePhysics(dt) {
   p.x += p.vx * dtFactor;
   p.x = Math.max(ROAD_LEFT + p.width / 2 + 4, Math.min(ROAD_RIGHT - p.width / 2 - 4, p.x));
 
-  const targetAngle = (p.vx / p.turnSpeed) * (isDrifting ? 0.38 : 0.18);
+  // Dynamic visual banking: blend vehicle turn momentum with phone tilt angle
+  const tiltBanking = gyro.enabled ? (gyro.smoothedGamma / 32) * 0.12 : 0;
+  const targetAngle = (p.vx / p.turnSpeed) * (isDrifting ? 0.38 : 0.18) + tiltBanking;
   p.driftAngle += (targetAngle - p.driftAngle) * 0.18 * dtFactor;
 
   if (isDrifting && Math.abs(p.vx) > 1.8) {
@@ -2149,6 +2520,26 @@ function updateLiveHUD(speed, isNitro) {
 
   const nitroBadge = document.getElementById('nitroBadge');
   nitroBadge.style.display = isNitro ? 'block' : 'none';
+
+  // Live Gyroscope Tilt Horizon / Inclinometer
+  if (gyro.enabled) {
+    const angle = Math.round(gyro.smoothedGamma);
+    const angleText = (angle > 0 ? `+${angle}°` : `${angle}°`);
+    const angleEl = document.getElementById('gyroAngleVal');
+    if (angleEl) angleEl.textContent = angleText;
+
+    const pip = document.getElementById('gyroPip');
+    if (pip) {
+      const clamped = Math.max(-gyro.maxTilt, Math.min(gyro.maxTilt, gyro.smoothedGamma));
+      const pct = 50 + (clamped / gyro.maxTilt) * 44;
+      pip.style.left = `${pct}%`;
+      if (Math.abs(clamped) >= gyro.maxTilt * 0.75) {
+        pip.classList.add('hard-turn');
+      } else {
+        pip.classList.remove('hard-turn');
+      }
+    }
+  }
 }
 
 /* ==================================================
@@ -2549,6 +2940,7 @@ function openMainMenu() {
   document.getElementById('menuTotalCoins').textContent = `🪙 ${saveState.coins.toLocaleString()}`;
   showScreen('menuScreen');
   renderStaticAttractRoad();
+  gyro.updateUIState();
 }
 
 function togglePause() {
@@ -2780,6 +3172,16 @@ document.getElementById('btnGoMenu').addEventListener('click', () => {
   openMainMenu();
 });
 
+document.getElementById('hudGyroBtn').addEventListener('click', async () => {
+  sound.playClick();
+  await gyro.requestPermissionAndToggle();
+});
+
+document.getElementById('menuGyroToggle').addEventListener('click', async () => {
+  sound.playClick();
+  await gyro.requestPermissionAndToggle();
+});
+
 document.getElementById('hudPauseBtn').addEventListener('click', togglePause);
 document.getElementById('hudFullscreenBtn').addEventListener('click', toggleFullscreen);
 
@@ -2802,9 +3204,11 @@ document.getElementById('btnFreeCoins').addEventListener('click', () => {
 
 window.addEventListener('load', () => {
   resizeCanvas();
+  gyro.init(saveState.gyroEnabled);
   openMainMenu();
 });
 resizeCanvas();
+gyro.init(saveState.gyroEnabled);
 openMainMenu();
 </script>
 </body>
