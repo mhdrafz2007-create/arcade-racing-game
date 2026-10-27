@@ -1045,6 +1045,8 @@
       0% { opacity: 0; transform: translate(-50%, 0) scale(0.6); }
       20% { opacity: 1; transform: translate(-50%, -20px) scale(1.2); }
       100% { opacity: 0; transform: translate(-50%, -60px) scale(0.9); }
+    }
+
     /* ══════════════════════════════════════════════════
        SETTINGS & CONTROLS MODAL
     ══════════════════════════════════════════════════ */
@@ -1214,19 +1216,21 @@
        LAYOUT CUSTOMIZER OVERLAY & DRAG/RESIZE STYLES
     ══════════════════════════════════════════════════ */
     .layout-editor-overlay {
-      position: absolute;
+      position: fixed;
       top: max(0.6rem, var(--sat));
       left: 50%;
       transform: translateX(-50%);
       width: 94%;
       max-width: 500px;
-      background: rgba(12, 16, 26, 0.95);
+      background: rgba(12, 16, 26, 0.96);
       border: 1px solid var(--neon-gold);
-      box-shadow: 0 0 25px rgba(245, 179, 36, 0.4);
-      backdrop-filter: blur(12px);
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 179, 36, 0.4);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border-radius: 18px;
       padding: 0.85rem 1.1rem;
-      z-index: 80;
+      z-index: 10000;
+      pointer-events: auto !important;
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
@@ -1234,7 +1238,19 @@
     }
 
     .layout-editor-overlay.hidden {
-      display: none;
+      display: none !important;
+    }
+
+    .layout-editor-overlay * {
+      pointer-events: auto !important;
+    }
+
+    #btnEditorSave {
+      position: relative;
+      z-index: 10001 !important;
+      pointer-events: auto !important;
+      cursor: pointer;
+      touch-action: manipulation;
     }
 
     @keyframes slideDownBar {
@@ -1306,6 +1322,8 @@
       touch-action: none !important;
       user-select: none !important;
       animation: pulseEditBorder 1.2s infinite alternate;
+      z-index: 1005 !important;
+      pointer-events: auto !important;
     }
 
     .touch-btn.customizing-btn.selected-target {
@@ -1313,6 +1331,14 @@
       outline-offset: 5px;
       box-shadow: 0 0 25px rgba(245, 179, 36, 0.8) !important;
       cursor: grabbing !important;
+      z-index: 1010 !important;
+      pointer-events: auto !important;
+    }
+
+    body.layout-editor-active .hud-top-bar,
+    body.layout-editor-active .hud-center-cluster {
+      opacity: 0.15;
+      pointer-events: none !important;
     }
 
     @keyframes pulseEditBorder {
@@ -1378,26 +1404,6 @@
     <!-- Live Toast Alert for Gyroscope & Status Changes -->
     <div class="hud-toast" id="hudToast"></div>
 
-    <!-- Interactive Pedal Layout Editor Overlay Bar -->
-    <div id="layoutEditorOverlay" class="layout-editor-overlay hidden">
-      <div class="editor-header-text">
-        <span class="editor-title">🛠️ PEDAL LAYOUT CUSTOMIZER</span>
-        <span class="editor-hint">Drag GAS & DRIFT buttons to reposition • Use +/- to resize</span>
-      </div>
-      <div class="editor-controls">
-        <div class="editor-scale-control">
-          <span style="font-size:0.75rem; color:var(--text-muted);">SCALE:</span>
-          <button class="btn btn-glass icon-scale-btn" id="btnScaleDown" title="Make Smaller">➖</button>
-          <span id="editorScaleValue" style="font-family:var(--font-display); color:var(--neon-gold); font-size:0.88rem; min-width:44px; text-align:center;">100%</span>
-          <button class="btn btn-glass icon-scale-btn" id="btnScaleUp" title="Make Larger">➕</button>
-        </div>
-        <div class="editor-actions">
-          <button class="btn btn-glass" id="btnEditorReset">↺ Reset</button>
-          <button class="btn btn-gold" id="btnEditorSave">💾 SAVE & DONE</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Bottom Bar: Multi-touch Steering & Pedals -->
     <div class="hud-bottom-bar">
       <!-- Left Thumb: Steering -->
@@ -1447,6 +1453,28 @@
         <button class="touch-btn gas-pedal" id="touchGasBtn" aria-label="Accelerate">
           GAS<br>▲
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       CONTROL LAYOUT CUSTOMIZER OVERLAY BAR
+  ══════════════════════════════════════════════════ -->
+  <div id="layoutEditorOverlay" class="layout-editor-overlay hidden">
+    <div class="editor-header-text">
+      <span class="editor-title">🛠️ CONTROL LAYOUT CUSTOMIZER</span>
+      <span class="editor-hint">Drag any control button to reposition • Use +/- to resize</span>
+    </div>
+    <div class="editor-controls">
+      <div class="editor-scale-control">
+        <span style="font-size:0.75rem; color:var(--text-muted);">SCALE:</span>
+        <button class="btn btn-glass icon-scale-btn" id="btnScaleDown" title="Make Smaller">➖</button>
+        <span id="editorScaleValue" style="font-family:var(--font-display); color:var(--neon-gold); font-size:0.88rem; min-width:44px; text-align:center;">100%</span>
+        <button class="btn btn-glass icon-scale-btn" id="btnScaleUp" title="Make Larger">➕</button>
+      </div>
+      <div class="editor-actions">
+        <button class="btn btn-glass" id="btnEditorReset">↺ Reset</button>
+        <button class="btn btn-gold" id="btnEditorSave">💾 SAVE & DONE</button>
       </div>
     </div>
   </div>
@@ -1650,7 +1678,7 @@
         <div class="settings-section-title">BUTTON LAYOUT CUSTOMIZATION</div>
         <div class="layout-custom-box">
           <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.35; margin-bottom: 0.75rem;">
-            Drag & drop the <strong>GAS</strong> and <strong>DRIFT</strong> pedals anywhere on screen, and resize them to fit your hand size and grip.
+            Drag & drop the <strong>STEERING (◀ / ▶)</strong>, <strong>GAS</strong> and <strong>DRIFT</strong> buttons anywhere on screen, and resize them to fit your hand size and grip.
           </p>
           <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
             <button class="btn btn-gold" id="btnOpenLayoutEditor" style="flex:1; min-width:170px; font-size:0.8rem;">
@@ -1933,6 +1961,8 @@ function loadSaveData() {
     gyroEnabled: false,
     customLayout: {
       customized: false,
+      left: null,
+      right: null,
       gas: null,
       drift: null
     },
@@ -2191,7 +2221,7 @@ function setupInputListeners() {
   let screenTouchActive = false;
 
   canvasEl.addEventListener('touchstart', e => {
-    if (!gameState.active || gameState.paused) return;
+    if (!gameState.active || gameState.paused || isLayoutEditorMode) return;
     const touch = e.touches[0];
     const rect = canvasEl.getBoundingClientRect();
     const touchX = ((touch.clientX - rect.left) / rect.width) * CANVAS_WIDTH;
@@ -2202,7 +2232,7 @@ function setupInputListeners() {
   }, { passive: true });
 
   canvasEl.addEventListener('touchmove', e => {
-    if (!screenTouchActive || !gameState.active) return;
+    if (!screenTouchActive || !gameState.active || gameState.paused || isLayoutEditorMode) return;
     const touch = e.touches[0];
     const rect = canvasEl.getBoundingClientRect();
     const touchX = ((touch.clientX - rect.left) / rect.width) * CANVAS_WIDTH;
@@ -2486,8 +2516,17 @@ function updateSettingsUI() {
 
 function closeSettings() {
   sound.playClick();
-  if (settingsSource === 'pause' || (gameState.active && gameState.paused)) {
-    showScreen('pauseScreen');
+  hideAllScreens();
+  if (gameState.active) {
+    if (settingsSource === 'pause') {
+      showScreen('pauseScreen');
+    } else {
+      document.getElementById('hudLayer').classList.remove('hidden');
+      gameState.paused = false;
+      sound.startEngine();
+      gameState.lastTime = performance.now();
+      showHUDToast('▶️ RACE RESUMED');
+    }
   } else {
     openMainMenu();
   }
@@ -2496,118 +2535,136 @@ function closeSettings() {
 /* ==================================================
    INTERACTIVE BUTTON LAYOUT CUSTOMIZER (DRAG, DROP & RESIZE)
 ================================================== */
+const CONTROL_BUTTON_IDS = ['touchLeftBtn', 'touchRightBtn', 'touchGasBtn', 'touchBrakeBtn'];
+const BUTTON_BASE_SIZES = {
+  touchLeftBtn: 64,
+  touchRightBtn: 64,
+  touchGasBtn: 72,
+  touchBrakeBtn: 64
+};
+
+function getLayoutKey(id) {
+  if (id === 'touchLeftBtn') return 'left';
+  if (id === 'touchRightBtn') return 'right';
+  if (id === 'touchGasBtn') return 'gas';
+  if (id === 'touchBrakeBtn') return 'drift';
+  return id;
+}
+
 let isLayoutEditorMode = false;
-let selectedButtonId = 'touchGasBtn'; // 'touchGasBtn' or 'touchBrakeBtn'
+let selectedButtonId = 'touchGasBtn';
 let activeDragTarget = null;
 let dragPointerId = null;
 let dragStartX = 0;
 let dragStartY = 0;
 let initialElemLeft = 0;
 let initialElemTop = 0;
+let draggableButtonsInitialized = false;
 
 function applyCustomLayout() {
   const cfg = saveState.customLayout;
-  const gasBtn = document.getElementById('touchGasBtn');
-  const brakeBtn = document.getElementById('touchBrakeBtn');
-  if (!gasBtn || !brakeBtn) return;
+  const isCustom = cfg && cfg.customized;
 
-  if (!cfg || !cfg.customized) {
-    // Revert to default flex flow inside .touch-action-cluster
-    gasBtn.style.position = '';
-    gasBtn.style.left = '';
-    gasBtn.style.top = '';
-    gasBtn.style.width = '';
-    gasBtn.style.height = '';
-    gasBtn.style.zIndex = '';
+  CONTROL_BUTTON_IDS.forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
 
-    brakeBtn.style.position = '';
-    brakeBtn.style.left = '';
-    brakeBtn.style.top = '';
-    brakeBtn.style.width = '';
-    brakeBtn.style.height = '';
-    brakeBtn.style.zIndex = '';
-    return;
-  }
+    const key = getLayoutKey(id);
+    const btnData = isCustom ? cfg[key] : null;
 
-  if (cfg.gas) {
-    gasBtn.style.position = 'fixed';
-    gasBtn.style.left = `${cfg.gas.left}px`;
-    gasBtn.style.top = `${cfg.gas.top}px`;
-    gasBtn.style.width = `${cfg.gas.width}px`;
-    gasBtn.style.height = `${cfg.gas.height}px`;
-    gasBtn.style.zIndex = '45';
-  }
-
-  if (cfg.drift) {
-    brakeBtn.style.position = 'fixed';
-    brakeBtn.style.left = `${cfg.drift.left}px`;
-    brakeBtn.style.top = `${cfg.drift.top}px`;
-    brakeBtn.style.width = `${cfg.drift.width}px`;
-    brakeBtn.style.height = `${cfg.drift.height}px`;
-    brakeBtn.style.zIndex = '45';
-  }
+    if (!isCustom || !btnData) {
+      btn.style.position = '';
+      btn.style.left = '';
+      btn.style.top = '';
+      btn.style.width = '';
+      btn.style.height = '';
+      btn.style.zIndex = '';
+    } else {
+      btn.style.position = 'fixed';
+      const bW = btnData.width || BUTTON_BASE_SIZES[id] || 64;
+      const bH = btnData.height || BUTTON_BASE_SIZES[id] || 64;
+      const clampLeft = Math.max(4, Math.min(window.innerWidth - bW - 4, btnData.left));
+      const clampTop = Math.max(50, Math.min(window.innerHeight - bH - 4, btnData.top));
+      btn.style.left = `${clampLeft}px`;
+      btn.style.top = `${clampTop}px`;
+      btn.style.width = `${bW}px`;
+      btn.style.height = `${bH}px`;
+      btn.style.zIndex = '45';
+    }
+  });
 }
 
 function startLayoutCustomizer() {
   sound.playClick();
+
+  // If game is active, ensure it is paused
+  if (gameState.active) {
+    gameState.paused = true;
+    sound.stopEngine();
+  }
+
+  // Hide settings and other UI modal screens
   hideAllScreens();
   document.getElementById('hudLayer').classList.remove('hidden');
+  document.body.classList.add('layout-editor-active');
 
   const overlay = document.getElementById('layoutEditorOverlay');
-  if (overlay) overlay.classList.remove('hidden');
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    overlay.style.display = 'flex';
+  }
 
   isLayoutEditorMode = true;
 
-  const gasBtn = document.getElementById('touchGasBtn');
-  const brakeBtn = document.getElementById('touchBrakeBtn');
+  // Convert all 4 buttons to fixed coordinates so they can be dragged freely
+  CONTROL_BUTTON_IDS.forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
 
-  // Convert to fixed coordinates so they can be dragged freely across the screen
-  const gasRect = gasBtn.getBoundingClientRect();
-  const brakeRect = brakeBtn.getBoundingClientRect();
+    const rect = btn.getBoundingClientRect();
+    const curW = Math.round(rect.width) || BUTTON_BASE_SIZES[id] || 64;
+    const curH = Math.round(rect.height) || BUTTON_BASE_SIZES[id] || 64;
+    const curLeft = Math.round(rect.left);
+    const curTop = Math.round(rect.top);
 
-  if (!saveState.customLayout || !saveState.customLayout.customized) {
-    gasBtn.style.position = 'fixed';
-    gasBtn.style.left = `${Math.round(gasRect.left)}px`;
-    gasBtn.style.top = `${Math.round(gasRect.top)}px`;
-    gasBtn.style.width = `${Math.round(gasRect.width)}px`;
-    gasBtn.style.height = `${Math.round(gasRect.height)}px`;
-    gasBtn.style.zIndex = '75';
+    btn.style.position = 'fixed';
+    btn.style.left = `${curLeft}px`;
+    btn.style.top = `${curTop}px`;
+    btn.style.width = `${curW}px`;
+    btn.style.height = `${curH}px`;
+    btn.style.zIndex = '1005';
 
-    brakeBtn.style.position = 'fixed';
-    brakeBtn.style.left = `${Math.round(brakeRect.left)}px`;
-    brakeBtn.style.top = `${Math.round(brakeRect.top)}px`;
-    brakeBtn.style.width = `${Math.round(brakeRect.width)}px`;
-    brakeBtn.style.height = `${Math.round(brakeRect.height)}px`;
-    brakeBtn.style.zIndex = '75';
-  } else {
-    gasBtn.style.zIndex = '75';
-    brakeBtn.style.zIndex = '75';
-  }
+    btn.classList.add('customizing-btn');
+  });
 
-  gasBtn.classList.add('customizing-btn');
-  brakeBtn.classList.add('customizing-btn');
+  // Temporarily undim steering buttons so they are 100% visible and movable
+  const steerCluster = document.getElementById('touchSteerCluster');
+  if (steerCluster) steerCluster.classList.remove('gyro-dimmed');
 
   selectButtonForCustomizing('touchGasBtn');
-  showHUDToast('🛠️ DRAG PEDALS TO MOVE • USE +/- TO RESIZE');
+  showHUDToast('🛠️ DRAG ANY CONTROL BUTTON TO REPOSITION • USE +/- TO RESIZE');
 }
 
 function selectButtonForCustomizing(btnId) {
+  if (!CONTROL_BUTTON_IDS.includes(btnId)) {
+    btnId = 'touchGasBtn';
+  }
   selectedButtonId = btnId;
-  const gasBtn = document.getElementById('touchGasBtn');
-  const brakeBtn = document.getElementById('touchBrakeBtn');
 
-  if (gasBtn && brakeBtn) {
-    gasBtn.classList.toggle('selected-target', btnId === 'touchGasBtn');
-    brakeBtn.classList.toggle('selected-target', btnId === 'touchBrakeBtn');
-
-    const targetEl = document.getElementById(btnId);
-    if (targetEl) {
-      const curW = targetEl.offsetWidth;
-      const baseW = btnId === 'touchGasBtn' ? 72 : 64;
-      const pct = Math.round((curW / baseW) * 100);
-      const scaleLabel = document.getElementById('editorScaleValue');
-      if (scaleLabel) scaleLabel.textContent = `${pct}%`;
+  CONTROL_BUTTON_IDS.forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.classList.toggle('selected-target', id === btnId);
     }
+  });
+
+  const targetEl = document.getElementById(btnId);
+  if (targetEl) {
+    const curW = targetEl.offsetWidth;
+    const baseW = BUTTON_BASE_SIZES[btnId] || 64;
+    const pct = Math.round((curW / baseW) * 100);
+    const scaleLabel = document.getElementById('editorScaleValue');
+    if (scaleLabel) scaleLabel.textContent = `${pct}%`;
   }
 }
 
@@ -2617,8 +2674,8 @@ function resizeSelectedButton(delta) {
 
   const currentW = target.offsetWidth;
   const currentH = target.offsetHeight;
-  const minSize = 48;
-  const maxSize = 125;
+  const minSize = 44;
+  const maxSize = 130;
 
   const newW = Math.max(minSize, Math.min(maxSize, currentW + delta));
   const newH = Math.max(minSize, Math.min(maxSize, currentH + delta));
@@ -2634,7 +2691,7 @@ function resizeSelectedButton(delta) {
   target.style.left = `${clampedL}px`;
   target.style.top = `${clampedT}px`;
 
-  const baseW = selectedButtonId === 'touchGasBtn' ? 72 : 64;
+  const baseW = BUTTON_BASE_SIZES[selectedButtonId] || 64;
   const pct = Math.round((newW / baseW) * 100);
   const scaleLabel = document.getElementById('editorScaleValue');
   if (scaleLabel) scaleLabel.textContent = `${pct}%`;
@@ -2644,80 +2701,113 @@ function resizeSelectedButton(delta) {
 
 function saveCustomLayout() {
   sound.playClick();
-  const gasBtn = document.getElementById('touchGasBtn');
-  const brakeBtn = document.getElementById('touchBrakeBtn');
 
-  const gasRect = gasBtn.getBoundingClientRect();
-  const brakeRect = brakeBtn.getBoundingClientRect();
-
-  saveState.customLayout = {
+  const newLayout = {
     customized: true,
-    gas: {
-      left: Math.round(gasRect.left),
-      top: Math.round(gasRect.top),
-      width: Math.round(gasRect.width),
-      height: Math.round(gasRect.height)
-    },
-    drift: {
-      left: Math.round(brakeRect.left),
-      top: Math.round(brakeRect.top),
-      width: Math.round(brakeRect.width),
-      height: Math.round(brakeRect.height)
-    }
+    left: null,
+    right: null,
+    gas: null,
+    drift: null
   };
+
+  CONTROL_BUTTON_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const key = getLayoutKey(id);
+    const baseW = BUTTON_BASE_SIZES[id] || 64;
+    const scaleVal = Math.round((rect.width / baseW) * 100);
+    newLayout[key] = {
+      left: Math.round(rect.left),
+      top: Math.round(rect.top),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      scale: scaleVal
+    };
+  });
+
+  saveState.customLayout = newLayout;
   saveGame();
 
+  // Immediately hide customizer overlay and cleanup editor mode
   exitLayoutEditorMode();
-  showHUDToast('✅ PEDAL LAYOUT SAVED!');
-  openSettings(settingsSource);
+
+  // Ensure all modal overlays and settings screens are hidden
+  hideAllScreens();
+
+  // Resume the game loop if gameplay was active
+  if (gameState.active) {
+    gameState.paused = false;
+    document.getElementById('hudLayer').classList.remove('hidden');
+    sound.startEngine();
+    gameState.lastTime = performance.now();
+    showHUDToast('✅ CONTROLS SAVED! RACE RESUMED');
+  } else {
+    openMainMenu();
+    showHUDToast('✅ CONTROLS SAVED!');
+  }
 }
 
 function resetCustomLayout() {
   sound.playClick();
-  saveState.customLayout = { customized: false };
+  saveState.customLayout = {
+    customized: false,
+    left: null,
+    right: null,
+    gas: null,
+    drift: null
+  };
   saveGame();
 
-  applyCustomLayout();
-
   if (isLayoutEditorMode) {
-    const gasBtn = document.getElementById('touchGasBtn');
-    const brakeBtn = document.getElementById('touchBrakeBtn');
-    if (gasBtn) gasBtn.classList.remove('customizing-btn', 'selected-target');
-    if (brakeBtn) brakeBtn.classList.remove('customizing-btn', 'selected-target');
     exitLayoutEditorMode();
-    openSettings(settingsSource);
+    hideAllScreens();
+    if (gameState.active) {
+      gameState.paused = false;
+      document.getElementById('hudLayer').classList.remove('hidden');
+      sound.startEngine();
+      gameState.lastTime = performance.now();
+      showHUDToast('↺ CONTROLS RESET! RACE RESUMED');
+    } else {
+      openMainMenu();
+      showHUDToast('↺ CONTROLS RESET TO DEFAULT');
+    }
+  } else {
+    applyCustomLayout();
+    showHUDToast('↺ CONTROLS RESET TO DEFAULT');
   }
-
-  showHUDToast('↺ PEDALS RESET TO DEFAULT');
 }
 
 function exitLayoutEditorMode() {
   isLayoutEditorMode = false;
   activeDragTarget = null;
   dragPointerId = null;
+  document.body.classList.remove('layout-editor-active');
 
   const overlay = document.getElementById('layoutEditorOverlay');
-  if (overlay) overlay.classList.add('hidden');
+  if (overlay) {
+    overlay.classList.add('hidden');
+    overlay.style.display = 'none';
+  }
 
-  const gasBtn = document.getElementById('touchGasBtn');
-  const brakeBtn = document.getElementById('touchBrakeBtn');
-  if (gasBtn) {
-    gasBtn.classList.remove('customizing-btn', 'selected-target');
-    gasBtn.style.zIndex = '45';
-  }
-  if (brakeBtn) {
-    brakeBtn.classList.remove('customizing-btn', 'selected-target');
-    brakeBtn.style.zIndex = '45';
-  }
+  CONTROL_BUTTON_IDS.forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) {
+      btn.classList.remove('customizing-btn', 'selected-target');
+      btn.style.zIndex = '';
+    }
+  });
 
   applyCustomLayout();
+  gyro.updateUIState();
 }
 
 function setupDraggableButtons() {
-  const gasBtn = document.getElementById('touchGasBtn');
-  const brakeBtn = document.getElementById('touchBrakeBtn');
+  if (draggableButtonsInitialized) return;
+  draggableButtonsInitialized = true;
 
-  [gasBtn, brakeBtn].forEach(el => {
+  CONTROL_BUTTON_IDS.forEach(id => {
+    const el = document.getElementById(id);
     if (!el) return;
 
     el.addEventListener('pointerdown', e => {
@@ -3927,10 +4017,52 @@ document.getElementById('settingsHapticToggle').addEventListener('click', () => 
   updateSettingsUI();
 });
 
-document.getElementById('btnScaleDown').addEventListener('click', () => resizeSelectedButton(-6));
-document.getElementById('btnScaleUp').addEventListener('click', () => resizeSelectedButton(6));
-document.getElementById('btnEditorReset').addEventListener('click', resetCustomLayout);
-document.getElementById('btnEditorSave').addEventListener('click', saveCustomLayout);
+const btnEditorSave = document.getElementById('btnEditorSave');
+if (btnEditorSave) {
+  btnEditorSave.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    saveCustomLayout();
+  });
+  btnEditorSave.addEventListener('pointerdown', (e) => e.stopPropagation());
+  btnEditorSave.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+}
+
+const btnEditorReset = document.getElementById('btnEditorReset');
+if (btnEditorReset) {
+  btnEditorReset.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    resetCustomLayout();
+  });
+  btnEditorReset.addEventListener('pointerdown', (e) => e.stopPropagation());
+}
+
+const btnScaleDown = document.getElementById('btnScaleDown');
+if (btnScaleDown) {
+  btnScaleDown.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    resizeSelectedButton(-6);
+  });
+  btnScaleDown.addEventListener('pointerdown', (e) => e.stopPropagation());
+}
+
+const btnScaleUp = document.getElementById('btnScaleUp');
+if (btnScaleUp) {
+  btnScaleUp.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    resizeSelectedButton(6);
+  });
+  btnScaleUp.addEventListener('pointerdown', (e) => e.stopPropagation());
+}
+
+const layoutEditorOverlay = document.getElementById('layoutEditorOverlay');
+if (layoutEditorOverlay) {
+  layoutEditorOverlay.addEventListener('pointerdown', (e) => e.stopPropagation());
+  layoutEditorOverlay.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: true });
+}
 
 document.getElementById('hudGyroBtn').addEventListener('click', async () => {
   sound.playClick();
@@ -3962,18 +4094,18 @@ document.getElementById('btnFreeCoins').addEventListener('click', () => {
   buildShopUI();
 });
 
-window.addEventListener('load', () => {
+let isAppInitialized = false;
+function initApp() {
+  if (isAppInitialized) return;
+  isAppInitialized = true;
   resizeCanvas();
   gyro.init(saveState.gyroEnabled);
   applyCustomLayout();
   setupDraggableButtons();
   openMainMenu();
-});
-resizeCanvas();
-gyro.init(saveState.gyroEnabled);
-applyCustomLayout();
-setupDraggableButtons();
-openMainMenu();
+}
+window.addEventListener('load', initApp);
+initApp();
 </script>
 </body>
 </html>
