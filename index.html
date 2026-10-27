@@ -135,11 +135,13 @@
       padding: 2rem;
       text-align: center;
       color: #fff;
+      pointer-events: none;
     }
 
     @media (orientation: landscape) and (max-height: 550px) {
       #rotateNotice {
         display: flex;
+        pointer-events: auto;
       }
     }
 
@@ -212,6 +214,9 @@
       transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
       outline: none;
       touch-action: manipulation;
+      pointer-events: auto !important;
+      position: relative;
+      z-index: 5;
     }
 
     .btn:active {
@@ -1828,6 +1833,7 @@
 ══════════════════════════════════════════════════ -->
 <script>
 'use strict';
+var isEngineReady = false;
 
 /**
  * VELOCITY RUSH - Senior HTML5 Arcade Racing Engine
@@ -1888,6 +1894,7 @@ class SoundAndHaptics {
 
   playClick() {
     this.vibrate(12);
+    if (!this.initialized) this.init();
     if (this.muted || !this.ctx) return;
     this.resume();
     const osc = this.ctx.createOscillator();
@@ -2127,7 +2134,7 @@ function resizeCanvas() {
   ctx.resetTransform();
   ctx.scale(dpr, dpr);
 
-  if (!gameState.active && typeof renderStaticAttractRoad === 'function') {
+  if (isEngineReady && gameState && !gameState.active && typeof renderStaticAttractRoad === 'function') {
     renderStaticAttractRoad();
   }
 }
@@ -2341,31 +2348,22 @@ function setupInputListeners() {
     }
   }
 
-  // Prevent pull-to-refresh on Android Chrome
-  document.addEventListener('touchmove', e => {
-    if (!e.target.closest('.shop-container') && !e.target.closest('.settings-card')) {
+  // Prevent default scroll/pull-to-refresh on game canvas during gameplay
+  const gameCanvasEl = document.getElementById('gameCanvas');
+  if (gameCanvasEl) {
+    gameCanvasEl.addEventListener('touchmove', e => {
+      e.preventDefault();
+    }, { passive: false });
+  }
+
+  // Prevent context menu on long press on controls
+  window.addEventListener('contextmenu', e => {
+    if (!e.target.closest('input, textarea')) {
       e.preventDefault();
     }
-  }, { passive: false });
+  });
 
-  // Prevent context menu and text selection callouts during rapid gameplay taps
-  window.addEventListener('contextmenu', e => e.preventDefault(), { capture: true });
-  document.addEventListener('contextmenu', e => e.preventDefault(), { capture: true });
-  document.addEventListener('selectstart', e => e.preventDefault(), { capture: true });
-
-  // Prevent double-tap zoom on mobile
-  let lastTouchEndTime = 0;
-  document.addEventListener('touchend', e => {
-    const now = performance.now();
-    if (now - lastTouchEndTime <= 300) {
-      if (!e.target.closest('input') && !e.target.closest('textarea')) {
-        e.preventDefault();
-      }
-    }
-    lastTouchEndTime = now;
-  }, { passive: false });
-
-  // Prevent pinch/gesture zoom
+  // Prevent pinch/gesture zoom on mobile Safari
   document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
   document.addEventListener('gesturechange', e => e.preventDefault(), { passive: false });
   document.addEventListener('gestureend', e => e.preventDefault(), { passive: false });
@@ -4268,6 +4266,7 @@ let isAppInitialized = false;
 function initApp() {
   if (isAppInitialized) return;
   isAppInitialized = true;
+  isEngineReady = true;
   resizeCanvas();
   gyro.init(saveState.gyroEnabled);
   applyCustomLayout();
