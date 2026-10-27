@@ -26,10 +26,10 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-      -webkit-tap-highlight-color: transparent;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -webkit-touch-callout: none !important;
+      -webkit-tap-highlight-color: transparent !important;
     }
 
     :root {
@@ -55,27 +55,38 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      height: 100dvh;
+      overflow: hidden !important;
       background-color: var(--bg);
       color: var(--text-main);
       font-family: var(--font-body);
       touch-action: none;
       overscroll-behavior: none;
       position: fixed;
+      inset: 0;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -webkit-touch-callout: none !important;
     }
 
     /* ══════════════════════════════════════════════════
        MAIN GAME VIEWPORT & CANVAS
     ══════════════════════════════════════════════════ */
     #gameViewport {
-      position: absolute;
+      position: fixed;
       inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: radial-gradient(circle at 50% 50%, #151828 0%, #08090e 100%);
-      overflow: hidden;
+      overflow: hidden !important;
       touch-action: none;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -webkit-touch-callout: none !important;
     }
 
     #shakeContainer {
@@ -252,6 +263,7 @@
     }
 
     .icon-btn {
+      position: relative;
       width: 44px;
       height: 44px;
       min-width: 44px;
@@ -262,6 +274,26 @@
       align-items: center;
       justify-content: center;
       font-size: 1.2rem;
+      touch-action: manipulation;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -webkit-touch-callout: none !important;
+    }
+
+    /* Ergonomic touch hitbox: keeps visual size at 44px, expands invisible interactive boundary to at least 60x60px */
+    .icon-btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      min-width: 60px;
+      min-height: 60px;
+      background: transparent;
+      pointer-events: auto;
+      border-radius: 50%;
       touch-action: manipulation;
     }
 
@@ -349,62 +381,53 @@
       justify-content: space-between;
       width: 100%;
       pointer-events: auto;
-      gap: 0.5rem;
+      gap: 1.2vmin;
     }
 
     .hud-pill {
       background: rgba(12, 16, 26, 0.88);
       border: 1px solid var(--card-border);
       backdrop-filter: blur(8px);
-      padding: 0.45rem 0.8rem;
-      border-radius: 12px;
+      padding: 0.8vmin 1.4vmin;
+      border-radius: 2.2vmin;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0.8vmin 3vmin rgba(0, 0, 0, 0.4);
       flex-shrink: 0;
       contain: layout style;
     }
 
     .hud-pill.score-pill {
-      width: 108px;
-      min-width: 108px;
+      width: 21vmin;
+      min-width: 18vmin;
+      max-width: 125px;
     }
 
     .hud-pill.shields-pill {
-      width: 88px;
-      min-width: 88px;
+      width: 16vmin;
+      min-width: 14vmin;
+      max-width: 95px;
       align-items: center;
     }
 
     .hud-pill.coins-pill {
-      width: 95px;
-      min-width: 95px;
+      width: 18vmin;
+      min-width: 16vmin;
+      max-width: 105px;
       align-items: flex-end;
     }
 
     .hud-utility-cluster {
       display: flex;
-      gap: 0.35rem;
+      gap: 0.8vmin;
       flex-shrink: 0;
-      min-width: 245px;
       justify-content: flex-end;
       pointer-events: auto;
     }
 
-    @media (max-width: 520px) {
-      .hud-top-bar {
-        gap: 0.25rem;
-      }
-      .hud-pill.score-pill { width: 92px; min-width: 92px; padding: 0.35rem 0.5rem; }
-      .hud-pill.shields-pill { width: 72px; min-width: 72px; padding: 0.35rem 0.4rem; }
-      .hud-pill.coins-pill { width: 80px; min-width: 80px; padding: 0.35rem 0.5rem; }
-      .hud-utility-cluster { min-width: 185px; gap: 0.2rem; }
-      .icon-btn { width: 35px; height: 35px; min-width: 35px; min-height: 35px; font-size: 1rem; }
-    }
-
     .hud-label {
       font-family: var(--font-display);
-      font-size: 0.55rem;
+      font-size: 1.4vmin;
       color: var(--text-muted);
       letter-spacing: 0.16em;
       text-transform: uppercase;
@@ -413,7 +436,7 @@
 
     .hud-value {
       font-family: var(--font-display);
-      font-size: 1.25rem;
+      font-size: 3.2vmin;
       font-weight: 700;
       color: var(--text-main);
       font-variant-numeric: tabular-nums;
@@ -429,14 +452,14 @@
 
     .hud-shields {
       display: flex;
-      gap: 0.3rem;
-      margin-top: 0.25rem;
+      gap: 0.6vmin;
+      margin-top: 0.4vmin;
     }
 
     .shield-pip {
-      width: 13px;
-      height: 13px;
-      border-radius: 4px;
+      width: 2.6vmin;
+      height: 2.6vmin;
+      border-radius: 0.7vmin;
       background: rgba(255, 255, 255, 0.15);
       border: 1px solid rgba(0, 240, 255, 0.4);
       transition: all 0.2s ease;
@@ -456,7 +479,7 @@
       justify-content: space-between;
       width: 100%;
       pointer-events: none;
-      padding-bottom: 0.2rem;
+      padding-bottom: 0.8vmin;
     }
 
     /* Left Thumb Steering Group */
@@ -465,6 +488,7 @@
       gap: 0.65rem;
       pointer-events: auto;
       touch-action: none;
+      padding: 6px; /* Transparent padding for wider thumb landing zone */
     }
 
     /* Right Thumb Action Group */
@@ -474,11 +498,15 @@
       gap: 0.65rem;
       pointer-events: auto;
       touch-action: none;
+      padding: 6px; /* Transparent padding for wider thumb landing zone */
     }
 
     .touch-btn {
+      position: relative;
       width: 64px;
       height: 64px;
+      min-width: 60px;
+      min-height: 60px;
       border-radius: 18px;
       background: rgba(16, 22, 36, 0.82);
       border: 2px solid rgba(255, 255, 255, 0.22);
@@ -493,6 +521,29 @@
       touch-action: none;
       transition: background 0.08s, transform 0.08s, border-color 0.08s, box-shadow 0.08s;
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      -webkit-touch-callout: none !important;
+    }
+
+    /* Ergonomic touch boundary: keeps visual size at 64px/72px, expands invisible interactive boundary to at least 60x60px */
+    .touch-btn::after {
+      content: '';
+      position: absolute;
+      top: -14px;
+      bottom: -14px;
+      left: -14px;
+      right: -14px;
+      min-width: 60px;
+      min-height: 60px;
+      background: transparent;
+      pointer-events: auto;
+      border-radius: 26px;
+      touch-action: none;
+    }
+
+    .touch-btn.customizing-btn::after {
+      pointer-events: none;
     }
 
     .touch-btn:active, .touch-btn.active-touch {
@@ -533,13 +584,17 @@
       box-shadow: 0 0 20px rgba(255, 42, 109, 0.6);
     }
 
-    /* Speedometer Gauge */
+    /* Speedometer Gauge scaled dynamically with vmin */
     .speedo-wrap {
       position: relative;
-      width: 105px;
-      height: 105px;
+      width: 22vmin;
+      height: 22vmin;
+      max-width: 120px;
+      max-height: 120px;
+      min-width: 68px;
+      min-height: 68px;
       pointer-events: none;
-      filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.25));
+      filter: drop-shadow(0 0 2vmin rgba(0, 240, 255, 0.25));
     }
 
     .speedo-wrap svg {
@@ -579,7 +634,7 @@
 
     .speedo-number {
       font-family: var(--font-display);
-      font-size: 1.45rem;
+      font-size: 5vmin;
       font-weight: 900;
       color: #fff;
       line-height: 1;
@@ -589,17 +644,17 @@
 
     .speedo-unit {
       font-family: var(--font-display);
-      font-size: 0.52rem;
+      font-size: 1.5vmin;
       letter-spacing: 0.2em;
       color: var(--neon-cyan);
-      margin-top: 2px;
+      margin-top: 0.4vmin;
     }
 
     .nitro-indicator {
       position: absolute;
-      bottom: -10px;
+      bottom: -2vmin;
       font-family: var(--font-display);
-      font-size: 0.58rem;
+      font-size: 1.7vmin;
       font-weight: 700;
       color: var(--neon-pink);
       letter-spacing: 0.12em;
@@ -619,15 +674,15 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 0.6vmin;
       pointer-events: none;
-      padding: 0.35rem 0.85rem;
+      padding: 0.8vmin 2vmin;
       background: rgba(12, 16, 26, 0.88);
       border: 1px solid var(--card-border);
       backdrop-filter: blur(8px);
       border-radius: 999px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-      margin-bottom: 0.4rem;
+      box-shadow: 0 0.8vmin 3vmin rgba(0, 0, 0, 0.4);
+      margin-bottom: 0.6vmin;
       transition: opacity 0.25s ease;
     }
 
@@ -640,9 +695,9 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      gap: 12px;
+      gap: 2vmin;
       font-family: var(--font-display);
-      font-size: 0.52rem;
+      font-size: 1.3vmin;
       letter-spacing: 0.14em;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -657,8 +712,10 @@
 
     .gyro-track {
       position: relative;
-      width: 100px;
-      height: 5px;
+      width: 20vmin;
+      min-width: 65px;
+      height: 1vmin;
+      min-height: 4px;
       background: rgba(255, 255, 255, 0.12);
       border-radius: 99px;
       overflow: visible;
@@ -666,11 +723,12 @@
 
     .gyro-center-notch {
       position: absolute;
-      top: -2px;
+      top: -0.4vmin;
       left: 50%;
       transform: translateX(-50%);
-      width: 2px;
-      height: 9px;
+      width: 0.4vmin;
+      min-width: 2px;
+      height: 1.8vmin;
       background: rgba(255, 255, 255, 0.4);
       border-radius: 1px;
     }
@@ -680,8 +738,10 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 11px;
-      height: 11px;
+      width: 2.2vmin;
+      height: 2.2vmin;
+      min-width: 9px;
+      min-height: 9px;
       border-radius: 50%;
       background: var(--neon-cyan);
       box-shadow: 0 0 10px var(--neon-cyan);
@@ -702,7 +762,7 @@
     /* Floating Toast Notification */
     .hud-toast {
       position: absolute;
-      top: calc(max(0.8rem, var(--sat)) + 52px);
+      top: calc(max(0.8rem, var(--sat)) + 8vmin);
       left: 50%;
       transform: translateX(-50%) translateY(-10px);
       background: rgba(12, 16, 26, 0.94);
@@ -710,9 +770,9 @@
       box-shadow: 0 0 22px rgba(0, 240, 255, 0.4);
       backdrop-filter: blur(10px);
       border-radius: 999px;
-      padding: 0.45rem 1.3rem;
+      padding: 0.8vmin 2.8vmin;
       font-family: var(--font-display);
-      font-size: 0.75rem;
+      font-size: 1.8vmin;
       font-weight: 700;
       letter-spacing: 0.08em;
       color: #fff;
@@ -1483,6 +1543,9 @@
        MAIN MENU SCREEN
   ══════════════════════════════════════════════════ -->
   <div id="menuScreen" class="ui-screen">
+    <button class="btn btn-glass icon-btn" id="menuFullscreenIconBtn" title="Toggle Fullscreen" style="position: absolute; top: max(0.9rem, var(--sat)); right: max(0.9rem, var(--sar)); z-index: 35;">
+      ⛶
+    </button>
     <h1 class="game-logo">VELOCITY RUSH</h1>
     <div class="game-subtitle">CYBER ARCADE RACING</div>
 
@@ -1495,6 +1558,9 @@
       </button>
       <button class="btn btn-glass" id="menuGyroToggle" style="border-color: rgba(0, 240, 255, 0.4);">
         📱 STEERING: TOUCH BUTTONS
+      </button>
+      <button class="btn btn-glass" id="btnMenuFullscreen" style="border-color: rgba(0, 240, 255, 0.4);">
+        ⛶ FULLSCREEN MODE
       </button>
       <button class="btn btn-glass" id="btnMobileQR" style="border-color: rgba(0, 240, 255, 0.4); color: var(--neon-cyan);">
         📱 PLAY ON PHONE
@@ -1634,6 +1700,7 @@
     <div class="menu-button-group">
       <button class="btn btn-gold" id="btnResume">RESUME RACE</button>
       <button class="btn btn-glass" id="btnPauseSettings">⚙️ SETTINGS & CONTROLS</button>
+      <button class="btn btn-glass" id="btnPauseFullscreen">⛶ TOGGLE FULLSCREEN</button>
       <button class="btn btn-glass" id="btnPauseRestart">RESTART</button>
       <button class="btn btn-glass" id="btnPauseMenu">MAIN MENU</button>
     </div>
@@ -2052,17 +2119,28 @@ function resizeCanvas() {
     renderW = containerH * aspect;
   }
 
-  canvas.width = CANVAS_WIDTH * dpr;
-  canvas.height = CANVAS_HEIGHT * dpr;
+  canvas.width = Math.round(CANVAS_WIDTH * dpr);
+  canvas.height = Math.round(CANVAS_HEIGHT * dpr);
   canvas.style.width = Math.floor(renderW) + 'px';
   canvas.style.height = Math.floor(renderH) + 'px';
 
   ctx.resetTransform();
   ctx.scale(dpr, dpr);
+
+  if (!gameState.active && typeof renderStaticAttractRoad === 'function') {
+    renderStaticAttractRoad();
+  }
 }
 
 window.addEventListener('resize', resizeCanvas);
-window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 200));
+window.addEventListener('orientationchange', () => {
+  resizeCanvas();
+  setTimeout(resizeCanvas, 80);
+  setTimeout(resizeCanvas, 250);
+});
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', resizeCanvas);
+}
 resizeCanvas();
 
 /* ==================================================
@@ -2265,13 +2343,32 @@ function setupInputListeners() {
 
   // Prevent pull-to-refresh on Android Chrome
   document.addEventListener('touchmove', e => {
-    if (!e.target.closest('.shop-container')) {
+    if (!e.target.closest('.shop-container') && !e.target.closest('.settings-card')) {
       e.preventDefault();
     }
   }, { passive: false });
 
-  // Prevent context menu on long press
-  window.addEventListener('contextmenu', e => e.preventDefault());
+  // Prevent context menu and text selection callouts during rapid gameplay taps
+  window.addEventListener('contextmenu', e => e.preventDefault(), { capture: true });
+  document.addEventListener('contextmenu', e => e.preventDefault(), { capture: true });
+  document.addEventListener('selectstart', e => e.preventDefault(), { capture: true });
+
+  // Prevent double-tap zoom on mobile
+  let lastTouchEndTime = 0;
+  document.addEventListener('touchend', e => {
+    const now = performance.now();
+    if (now - lastTouchEndTime <= 300) {
+      if (!e.target.closest('input') && !e.target.closest('textarea')) {
+        e.preventDefault();
+      }
+    }
+    lastTouchEndTime = now;
+  }, { passive: false });
+
+  // Prevent pinch/gesture zoom
+  document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
+  document.addEventListener('gesturechange', e => e.preventDefault(), { passive: false });
+  document.addEventListener('gestureend', e => e.preventDefault(), { passive: false });
 }
 setupInputListeners();
 
@@ -3759,19 +3856,83 @@ function togglePause() {
   }
 }
 
-function toggleFullscreen() {
-  sound.playClick();
-  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    } else if (document.documentElement.webkitRequestFullscreen) {
-      document.documentElement.webkitRequestFullscreen();
-    }
-  } else {
-    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+function isFullscreenActive() {
+  return !!(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement
+  );
+}
+
+function updateFullscreenUI() {
+  const isFS = isFullscreenActive();
+  const hudBtn = document.getElementById('hudFullscreenBtn');
+  if (hudBtn) {
+    hudBtn.textContent = isFS ? '🗗' : '⛶';
+    hudBtn.title = isFS ? 'Exit Fullscreen' : 'Toggle Fullscreen';
+    hudBtn.classList.toggle('active', isFS);
+  }
+  const menuIconBtn = document.getElementById('menuFullscreenIconBtn');
+  if (menuIconBtn) {
+    menuIconBtn.textContent = isFS ? '🗗' : '⛶';
+    menuIconBtn.title = isFS ? 'Exit Fullscreen' : 'Toggle Fullscreen';
+    menuIconBtn.classList.toggle('active', isFS);
+  }
+  const menuBtnList = document.getElementById('btnMenuFullscreen');
+  if (menuBtnList) {
+    menuBtnList.textContent = isFS ? '🗗 EXIT FULLSCREEN' : '⛶ FULLSCREEN MODE';
+  }
+  const pauseBtn = document.getElementById('btnPauseFullscreen');
+  if (pauseBtn) {
+    pauseBtn.textContent = isFS ? '🗗 EXIT FULLSCREEN' : '⛶ FULLSCREEN MODE';
   }
 }
+
+async function toggleFullscreen() {
+  sound.playClick();
+  const doc = document;
+  const docEl = document.documentElement;
+
+  try {
+    if (!isFullscreenActive()) {
+      const requestFS = docEl.requestFullscreen ||
+                        docEl.webkitRequestFullscreen ||
+                        docEl.mozRequestFullScreen ||
+                        docEl.msRequestFullscreen;
+      if (requestFS) {
+        await requestFS.call(docEl);
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('portrait').catch(() => {});
+        }
+        showHUDToast('⛶ FULLSCREEN ENABLED');
+      }
+    } else {
+      const exitFS = doc.exitFullscreen ||
+                     doc.webkitExitFullscreen ||
+                     doc.mozCancelFullScreen ||
+                     doc.msExitFullscreen;
+      if (exitFS) {
+        await exitFS.call(doc);
+        showHUDToast('⛶ FULLSCREEN EXITED');
+      }
+    }
+  } catch (err) {
+    console.log('Fullscreen request error:', err);
+  }
+
+  resizeCanvas();
+  updateFullscreenUI();
+}
+
+document.addEventListener('fullscreenchange', () => {
+  resizeCanvas();
+  updateFullscreenUI();
+});
+document.addEventListener('webkitfullscreenchange', () => {
+  resizeCanvas();
+  updateFullscreenUI();
+});
 
 function gameOver() {
   gameState.active = false;
@@ -4075,7 +4236,16 @@ document.getElementById('menuGyroToggle').addEventListener('click', async () => 
 });
 
 document.getElementById('hudPauseBtn').addEventListener('click', togglePause);
-document.getElementById('hudFullscreenBtn').addEventListener('click', toggleFullscreen);
+
+['hudFullscreenBtn', 'menuFullscreenIconBtn', 'btnMenuFullscreen', 'btnPauseFullscreen'].forEach(id => {
+  const btn = document.getElementById(id);
+  if (btn) {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleFullscreen();
+    });
+  }
+});
 
 document.getElementById('hudSoundBtn').addEventListener('click', () => {
   const isAudible = sound.toggleMute();
@@ -4102,6 +4272,7 @@ function initApp() {
   gyro.init(saveState.gyroEnabled);
   applyCustomLayout();
   setupDraggableButtons();
+  updateFullscreenUI();
   openMainMenu();
 }
 window.addEventListener('load', initApp);
